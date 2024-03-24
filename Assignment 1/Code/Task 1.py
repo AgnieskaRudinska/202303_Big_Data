@@ -11,15 +11,15 @@ def process_to_black_and_white(image: np.array, image_name: str):
 
     image_grayscale = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     # find the meadian value of pixels, since pixel is between 0 and 255
-    mean = np.median(image_grayscale)
+    median = np.median(image_grayscale)
     # set pixels lower than median to black, higher than median to white
-    image_grayscale[image_grayscale > mean] = 255
-    image_grayscale[image_grayscale < mean] = 0
+    image_grayscale[image_grayscale > median] = 255
+    image_grayscale[image_grayscale < median] = 0
     cv2.imwrite(f'Assignment 1/Data/Gray/{image_name}', image_grayscale)
 
 
 def process_blur(image: np.array, image_name: str):
-    # adding Gaussiian blur to image
+    # adding Gaussian blur to image
     blurred = cv2.GaussianBlur(image, (15, 15), 5)
     cv2.imwrite(f'Assignment 1/Data/Blurred/{image_name}', blurred)
 
@@ -85,7 +85,7 @@ def assigment_split(arguments):
 # execute tasks and images in paralel
 
 
-def scenario_3(images, cpu_count):
+def scenario_2(images, cpu_count):
     expanded_array = [(i, name) for name in images for i in range(1, 3)]
     case_3 = [(3, name) for name in images]
     with mp.Pool(cpu_count) as pool:
@@ -111,7 +111,7 @@ def test_function(images, function, file_name, order):
         print(f'Test with {processor_count} cpu')
         for _ in range(0, 10):
             start = time.perf_counter()
-            # scenario_3(images, processors)
+            # scenario_2(images, processors)
             function(images, processor_count)
             end = time.perf_counter()
             elapsed_time = end - start
@@ -160,10 +160,10 @@ if __name__ == '__main__':
     images = [image_name for image_name in os.listdir(IMAGE_DIR)]
 
     # scenario_4(images, scenario_1, 'scenario_1_asc', 'asc')
-    # scenario_4(images, scenario_3, 'scenario_3_asc', 'asc')
+    # scenario_4(images, scenario_2, 'scenario_2_asc', 'asc')
 
     # test_function(images, scenario_1, 'scenario_1_10', 'desc')
-    # test_function(images, scenario_3, 'scenario_3_10', 'desc')
+    # test_function(images, scenario_2, 'scenario_2_10', 'desc')
     # test_function(images, test_bw, 'bw_10', 'desc')
     test_function(images, test_blur, 'blur_10', 'desc')
     test_function(images, test_noise, 'noise_10', 'desc')
