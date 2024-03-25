@@ -8,7 +8,7 @@ def read_and_aggregate_data(file_name):
     data = defaultdict(list)
     with open(file_name, 'r') as file:
         for line in file:
-            processors, runtime = line.strip().split(',')  # Adjust delimiter if necessary
+            processors, runtime = line.strip().split(',') 
             data[int(processors)].append(float(runtime))
     return {p: sum(data[p]) / len(data[p]) for p in sorted(data)}
 
@@ -17,7 +17,7 @@ file_a = 'Assignment 1/Results/bw_10.txt'
 file_b = 'Assignment 1/Results/blur_10.txt'
 file_c = 'Assignment 1/Results/noise_10.txt'
 
-# Read and aggregate data from each file
+# Reading and aggregating data from each file
 data_a = read_and_aggregate_data(file_a)
 data_b = read_and_aggregate_data(file_b)
 data_c = read_and_aggregate_data(file_c)

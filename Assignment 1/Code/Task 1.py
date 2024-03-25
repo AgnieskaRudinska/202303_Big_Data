@@ -29,9 +29,10 @@ def process_noise(image: np.array, image_name: str):
     # find positions, where each r, g, b is equal to 0.
     # we also can do this, be setting the image to grayscale and looking for 0
     # but since we want to add red noise, we decided to use original rgb
-
-    black_pixels = np.where((image[:, :, 0] == 0) & (
-        image[:, :, 1] == 0) & (image[:, :, 2] == 0))
+    bw_image_path = f'Assignment 1/Data/Gray/{image_name}'
+    bw_image = cv2.imread(bw_image_path)
+    black_pixels = np.where((bw_image[:, :, 0] == 0) & (
+        bw_image[:, :, 1] == 0) & (bw_image[:, :, 2] == 0))
     number_of_black_pixels = len(black_pixels[0])
     # Calculate the 10% of black pixels and set that amount to red in random locations across the picture
     # There is a possibility, that the red pixels will be set twice,
@@ -51,9 +52,7 @@ def process_image(image_name: str):
     image = cv2.imread(image_path)
     process_to_black_and_white(image, image_name)
     process_blur(image, image_name)
-    bw_image_path = f'Assignment 1/Data/Gray/{image_name}'
-    bw_image = cv2.imread(bw_image_path)
-    process_noise(bw_image, image_name)
+    process_noise(image, image_name)
 
 # execute each image im paralel
 
@@ -77,9 +76,9 @@ def assigment_split(arguments):
         image = cv2.imread(image_path)
         process_blur(image, image_name)
     elif assignment == 3:
-        bw_image_path = f'Assignment 1/Data/Gray/{image_name}'
-        bw_image = cv2.imread(bw_image_path)
-        process_noise(bw_image, image_name)
+        image_path = f'{IMAGE_DIR}/{image_name}'
+        image = cv2.imread(image_path)
+        process_noise(image, image_name)
 
 
 # execute tasks and images in paralel
@@ -105,8 +104,8 @@ def test_function(images, function, file_name, order):
         end_pos = processors+1
     else:
         increment = -1
-        end_pos = 5
-        start_pos = processors
+        end_pos = 8
+        start_pos = 9
     for processor_count in range(start_pos, end_pos, increment):
         print(f'Test with {processor_count} cpu')
         for _ in range(0, 10):
@@ -137,37 +136,12 @@ def test_noise(images, processor_count):
     with mp.Pool(processor_count) as pool:
         pool.map(assigment_split, args)
 
-# def test_pool(number):
-#     print(f'Started {number}')
-#     time.sleep(1)
-#     print(f'Ended {number}')
-
-# def test_pool_3():
-#     process = 4
-#     numbers = [1, 2, 3]
-#     expanded_array = [(i, number) for number in numbers for i in range(1, 3)]
-#     c_option = [(3, number) for number in numbers]
-#     print(expanded_array)
-#     with mp.Pool(process) as pool:
-#         pool.map(test_pool, expanded_array)
-#     with mp.Pool(process) as pool:
-#         pool.map(test_pool, c_option)
 
 
 IMAGE_DIR = "Assignment 1/Data/Images"
 if __name__ == '__main__':
     print("Number of processors: ", mp.cpu_count())
     images = [image_name for image_name in os.listdir(IMAGE_DIR)]
-
-    # scenario_4(images, scenario_1, 'scenario_1_asc', 'asc')
-    # scenario_4(images, scenario_2, 'scenario_2_asc', 'asc')
-
-    # test_function(images, scenario_1, 'scenario_1_10', 'desc')
-    # test_function(images, scenario_2, 'scenario_2_10', 'desc')
-    # test_function(images, test_bw, 'bw_10', 'desc')
-    test_function(images, test_blur, 'blur_10', 'desc')
-    test_function(images, test_noise, 'noise_10', 'desc')
-
-    # with mp.Pool(3) as pool:
-    #     pool.map(test_pool, [1, 2, 3, 4, 5])
-    # scenario_5(images, 'scenario_5_sequential')
+    temp = [(3, image) for image in images]
+    with mp.Pool(12) as pool:
+        pool.map(assigment_split, temp)
